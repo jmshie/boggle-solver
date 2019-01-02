@@ -1,4 +1,5 @@
 
+// Get references to required elements.
 var solveButton = document.querySelector('#solve');
 var changeSizeButton = document.querySelector('#changeSize');
 var sizeField = document.querySelector('#sizeField');
@@ -12,18 +13,23 @@ changeSizeButton.onclick = function() {
 }
   
 solveButton.onclick = function() {
+  // Flatten the puzzle to a single string so it can be sent to the solver.
   var tiles = document.querySelectorAll('.tile');
   puzzle = '';
   for (var i = 0; i < tiles.length; ++i) {
     puzzle += tiles[i].value;
   }
-  
+
+  // Send the puzzle as a query parameter to the Boggle solver URI.
   var request = new XMLHttpRequest();
   request.open('GET', 'boggle/solver?puzzle=' + encodeURIComponent(puzzle));
   request.onload = function() {
+    // Remove the current solution and replace it with the one just retrieved.
     solution.removeChild(solutionChild);
     solutionChild = document.createElement('ol');
     solution.appendChild(solutionChild);
+
+    // Create a list item for each word in the solution list.
     var words = request.response.split('\n');
     for (var i = 0; i < words.length; ++i) {
       var item = document.createElement('li');
@@ -31,12 +37,18 @@ solveButton.onclick = function() {
       solutionChild.appendChild(item);
     }
   }
+  
   request.send();
 }
 
+/**
+ * Creates a new Boggle grid of the specified size.
+ */
 function changeSize() {
   var size = sizeField.value;
+  // Validate the size of the grid.
   if (size >= 2 && size <= 10) {
+    // Remove the current grid and replace it with one with the specified size.
     grid.removeChild(gridChild);
     gridChild = document.createElement('div');
     grid.appendChild(gridChild);
@@ -53,7 +65,6 @@ function changeSize() {
         tile.setAttribute('minlength', 1);
         tile.setAttribute('maxlength', 1);
         tile.setAttribute('size', '1');
-//        tile.setAttribute('pattern', '[A-Z]');
         tile.setAttribute('value', 'A');
         div.appendChild(tile);
       }
@@ -61,4 +72,5 @@ function changeSize() {
   }
 }
 
+// Set the default size of the grid when the page loads.
 changeSize();
